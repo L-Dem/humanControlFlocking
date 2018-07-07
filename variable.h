@@ -3,7 +3,7 @@
 #include "qcustomplot.h"
 
 #define COUNT_PHI 2
-
+#define DEBUGE true // flag to lot estimation or comparison
 #define COUNT 16  // number of agents
 #define CALCULATE 20
 #define COUNT_LEADER COUNT/CALCULATE + 1  // COUNT / CALCULATE

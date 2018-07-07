@@ -51,23 +51,29 @@ MainWindow::MainWindow(QWidget *parent) :
         if(element[i].is_leader){
             draw_leader_x.append(element[i].positionX);
             draw_leader_y.append(element[i].positionY);
-//            draw_leader_xx.append(element[i].x[0]);
-//            draw_leader_xy.append(element[i].x[1]);
+            if(DEBUGE == true){
+               draw_leader_xx.append(element[i].x[0]);
+               draw_leader_xy.append(element[i].x[1]);
+            }
         }
         else{
             draw_follower_x.append(element[i].positionX);
             draw_follower_y.append(element[i].positionY);
-//            draw_follower_xx.append(element[i].x[0]);
-//            draw_follower_xy.append(element[i].x[1]);
+            if(DEBUGE == true){
+               draw_follower_xx.append(element[i].x[0]);
+               draw_follower_xy.append(element[i].x[1]);
+            }
+        }
+        if(DEBUGE == false){
+            if(element_b[i].is_leader){
+                draw_leader_xx.append(element_b[i].positionX);
+                draw_leader_xy.append(element_b[i].positionY);
+            }else{
+                draw_follower_xx.append(element_b[i].positionX);
+                draw_follower_xy.append(element_b[i].positionY);
+            }
         }
 
-        if(element_b[i].is_leader){
-            draw_leader_xx.append(element_b[i].positionX);
-            draw_leader_xy.append(element_b[i].positionY);
-        }else{
-            draw_follower_xx.append(element_b[i].positionX);
-            draw_follower_xy.append(element_b[i].positionY);
-        }
 
         qDebug() << i<<":X:" << element[i].positionX << endl;
         qDebug() << i<<":Y:" << element[i].positionY << endl;
@@ -166,23 +172,31 @@ void MainWindow::flocking(){
         if(element[i].is_leader){
             draw_leader_x.append(element[i].positionX);
             draw_leader_y.append(element[i].positionY);
-//            draw_leader_xx.append(element[i].x[0]);
-//            draw_leader_xy.append(element[i].x[1]);
+            if(DEBUGE ==true){
+                draw_leader_xx.append(element[i].x[0]);
+                draw_leader_xy.append(element[i].x[1]);
+            }
+
         }
         else{
             draw_follower_x.append(element[i].positionX);
             draw_follower_y.append(element[i].positionY);
-//            draw_follower_xx.append(element[i].x[0]);
-//            draw_follower_xy.append(element[i].x[1]);
+            if(DEBUGE ==true){
+                draw_follower_xx.append(element[i].x[0]);
+                draw_follower_xy.append(element[i].x[1]);
+            }
+
+        }
+        if(DEBUGE == false){
+            if(element_b[i].is_leader){
+                draw_leader_xx.append(element_b[i].positionX);
+                draw_leader_xy.append(element_b[i].positionY);
+            }else{
+                draw_follower_xx.append(element_b[i].positionX);
+                draw_follower_xy.append(element_b[i].positionY);
+            }
         }
 
-        if(element_b[i].is_leader){
-            draw_leader_xx.append(element_b[i].positionX);
-            draw_leader_xy.append(element_b[i].positionY);
-        }else{
-            draw_follower_xx.append(element_b[i].positionX);
-            draw_follower_xy.append(element_b[i].positionY);
-        }
 //        qDebug() << i<<":X:" << element[i].positionX << endl;
 //        qDebug() << i<<":Y:" << element[i].positionY << endl;
         i++;
