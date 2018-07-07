@@ -187,7 +187,7 @@ void particle::find_neighbour(vector<particle> particle_list){  //rewrite
 }
 
 /*control*/
-void particle::control_run(){  // debug
+void particle::control_run(){  // use FLAG to decide which kind of flocking to run
     int len = count_phi;
     if(is_leader == false){
         int count_nei = neighbor.size();
@@ -247,39 +247,7 @@ void particle::control_run(){  // debug
 
 
 
-double particle::phi_alpha(double z){  // potential function
-    double a = 6;
-    double b = 8;
-    double c = abs(a - b) / sqrt(4 *a *b);
-    double x1 = phi_h(z / r_obs);
-    double middle1 = (a + b) * sigma1(z - r_obs + c);
-    double middle2 = middle1 / 2;
-    double x2 = middle2 + b - a;
-    double y = x1 * x2;
-    if (z > r_com){
-        y = 0;
-    }
-    return y;
-}
-
-double particle::phi_h(double z){
-    double y = 0;
-    if(z>=0 && z < h){
-        y = 1;
-    }else if(z>= h && z < 1){
-        y = (1 + cos(3.14 * (z - h)/(1 - h))) / 2;
-    }else{
-        y = 0;
-    }
-    return y + 0.3;
-}
-
-double particle::sigma1(double z){
-    double y = z / sqrt(1 + pow(z, 2));
-    return y;
-}
-
-void particle::human_control_run(double arx, double ary){
+void particle::human_control_run(double arx, double ary){  // flocking which has estimation
     int len = count_phi;
     if(is_leader == false){
         int count_nei = neighbor.size();
@@ -328,7 +296,7 @@ void particle::human_control_run(double arx, double ary){
 }
 
 
-void particle::human_control_run_pure(double arx, double ary){
+void particle::human_control_run_pure(double arx, double ary){  // pure flocking
     int len = count_phi;
     if(is_leader == false){
         int count_nei = neighbor.size();
@@ -374,4 +342,37 @@ void particle::human_control_run_pure(double arx, double ary){
         positionY = position[1];
     }
 
+}
+
+
+double particle::phi_alpha(double z){  // potential function
+    double a = 6;
+    double b = 8;
+    double c = abs(a - b) / sqrt(4 *a *b);
+    double x1 = phi_h(z / r_obs);
+    double middle1 = (a + b) * sigma1(z - r_obs + c);
+    double middle2 = middle1 / 2;
+    double x2 = middle2 + b - a;
+    double y = x1 * x2;
+    if (z > r_com){
+        y = 0;
+    }
+    return y;
+}
+
+double particle::phi_h(double z){
+    double y = 0;
+    if(z>=0 && z < h){
+        y = 1;
+    }else if(z>= h && z < 1){
+        y = (1 + cos(3.14 * (z - h)/(1 - h))) / 2;
+    }else{
+        y = 0;
+    }
+    return y + 0.3;
+}
+
+double particle::sigma1(double z){
+    double y = z / sqrt(1 + pow(z, 2));
+    return y;
 }
