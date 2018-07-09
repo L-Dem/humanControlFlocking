@@ -51,6 +51,7 @@ public:
     void done_all();
 //    ~particle();
     void estimation_a();
+    void estimation_b();
 //    estimation_b();
     void compute_phi();
     void find_neighbour(vector<particle> particle_list);
