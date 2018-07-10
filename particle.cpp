@@ -134,10 +134,11 @@ void particle::estimation_a(){
 }
 
 void particle::estimation_b(){
-    r = 0.1;
+    r = 2;
     int len_x = count_phi;
     for(int k= 0; k < len_x; k++){
         x_before[k] = x[k];
+        omega_before[k] = omega[k];
     }
 
     vector<double> middle1(count_phi);
@@ -151,8 +152,8 @@ void particle::estimation_b(){
 
     }else{
         for(unsigned int j = 0; j < neighbor.size(); j++){
-            double a = 4;
-            double b = 0.2;
+            double a = 0.1;
+            double b = 0.002;
             for(int k = 0; k < len; k++){
                 middle1[k] = middle1[k] + a * (x[k] - neighbor[j].x[k]);
             }
@@ -165,11 +166,13 @@ void particle::estimation_b(){
         }
         for(int k = 0; k < len; k++){
             omega_d[k] = -middle3[k];
-            omega[k] = omega[k] + omega_d[k] * dt;
-            x_d[k] -r * x[k] - middle1[k] + middle2[k] + r * phi[k];
+            omega[k] = omega_before[k] + omega_d[k] * dt;
+            x_d[k] = -r * x[k] - middle1[k] + middle2[k] + r * phi[k];
             x[k] = x[k] + x_d[k] * dt;
         }
     }
+//    cout << "estimation_x:" << x[0] << endl;
+//    cout << "estimation_y:" << x[1] << endl;
 }
 
 /*compute each agent's Jacobi matrix*/

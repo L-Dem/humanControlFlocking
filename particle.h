@@ -33,6 +33,7 @@ public:
     int **gamma = new int*[count_phi]();
     double *x = new double[count_phi]();  // state of each agent
     double *x_before = new double[count_phi]();
+    double *omega_before = new double[count_phi]();
     double *x_d = new double[count_phi]();
     double *phi = new double[count_phi]();  // moment of each agent
     double **phi_d =  new double*[2]();

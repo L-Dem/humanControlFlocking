@@ -74,9 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
             }
         }
 
-
-        qDebug() << i<<":X:" << element[i].positionX << endl;
-        qDebug() << i<<":Y:" << element[i].positionY << endl;
     }
     ui->customPlot->addGraph();
     ui->customPlot->graph(0)->setPen(QPen(Qt::green));
@@ -161,13 +158,15 @@ void MainWindow::flocking(){
     while(i < COUNT){
         element[i].compute_phi();
         element[i].find_neighbour(element);
-        element[i].estimation_a();
+//        element[i].estimation_a();
+        element[i].estimation_b();
         element[i].human_control_run(arx, ary);
 
         element_b[i].compute_phi();
         element_b[i].find_neighbour(element_b);
         element_b[i].estimation_a();
-        element_b[i].human_control_run_pure(arx, ary);
+//        element_b[i].estimation_b();
+//        element_b[i].human_control_run_pure(arx, ary);
 
         if(element[i].is_leader){
             draw_leader_x.append(element[i].positionX);
