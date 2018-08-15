@@ -8,8 +8,9 @@
 #define CALCULATE 20
 #define COUNT_LEADER COUNT/CALCULATE + 1  // COUNT / CALCULATE
 #define STAY false
-#define PURE_FLOCKING true
+#define PURE_FLOCKING true  // flag which define pure flocking or not
 #define MY_ESTIMATION true  // use (estimation to leader) or not
+#define SCALA 60 // parameter to multiple the arx which is human's input
 #define SIZEOF(array, len){len = (sizeof(array) / sizeof(array[0]));}
 
 

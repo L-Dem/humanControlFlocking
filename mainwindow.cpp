@@ -76,26 +76,26 @@ MainWindow::MainWindow(QWidget *parent) :
 
     }
     ui->customPlot->addGraph();
-    ui->customPlot->graph(0)->setPen(QPen(Qt::green));
+    ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
     ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
+    ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
     ui->customPlot->graph(0)->setData(draw_leader_x, draw_leader_y);
     ui->customPlot->addGraph();
     ui->customPlot->graph(1)->setPen(QPen(Qt::red));
     ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
+    ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
     ui->customPlot->graph(1)->setData(draw_follower_x, draw_follower_y);
 
     ui->customPlot_x->addGraph();
     ui->customPlot_x->graph(0)->setPen(QPen(Qt::red));
     ui->customPlot_x->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot_x->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
+    ui->customPlot_x->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
     ui->customPlot_x->graph(0)->setData(draw_follower_xx, draw_follower_xy);
 
     ui->customPlot_x->addGraph();
-    ui->customPlot_x->graph(1)->setPen(QPen(Qt::green));
+    ui->customPlot_x->graph(1)->setPen(QPen(Qt::blue));
     ui->customPlot_x->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot_x->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 5));
+    ui->customPlot_x->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
     ui->customPlot_x->graph(1)->setData(draw_leader_xx, draw_leader_xy);
 
     ui->customPlot_x->xAxis->setLabel("x");
@@ -161,11 +161,13 @@ void MainWindow::flocking(){
 //        element[i].estimation_a();
         element[i].estimation_b();
         element[i].human_control_run(arx, ary);
+//        element[i].human_control_run_pure(arx, ary);
 
         element_b[i].compute_phi();
         element_b[i].find_neighbour(element_b);
-        element_b[i].estimation_a();
-//        element_b[i].estimation_b();
+//        element_b[i].estimation_a();
+        element_b[i].estimation_b();
+        element_b[i].human_control_run(arx, ary);
 //        element_b[i].human_control_run_pure(arx, ary);
 
         if(element[i].is_leader){
