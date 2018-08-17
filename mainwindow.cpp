@@ -13,6 +13,8 @@
 #include "plot_vector.h"
 #include "particle.h"
 #include "gamepad.hpp"
+#include "iostream"
+#include "fstream"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -25,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QVector<double> draw_follower_x(COUNT), draw_follower_y(COUNT);
     QVector<double> draw_leader_xx(COUNT_LEADER), draw_leader_xy(COUNT_LEADER);
     QVector<double> draw_follower_xx(COUNT), draw_follower_xy(COUNT);
+
     int count = COUNT;  // create agent number
     double position[3][2] = {
         {10, 50},
@@ -47,72 +50,83 @@ MainWindow::MainWindow(QWidget *parent) :
         element_b.push_back(my_particle_b);
         i++;
     }
-    for(int i = 0; i < COUNT; i++){
-        if(element[i].is_leader){
-            draw_leader_x.append(element[i].positionX);
-            draw_leader_y.append(element[i].positionY);
-            if(DEBUGE == true){
-               draw_leader_xx.append(element[i].x[0]);
-               draw_leader_xy.append(element[i].x[1]);
+    ofstream outfile;
+    outfile.open("../result.txt", ios::out|ios::trunc);
+    outfile << "flocking c2:" << element[0].c2 << endl;
+    outfile.close();
+    count_calculate_time = 0;
+    write_flag = 0;
+    if(CONSENSUS == false){// draw plot
+        for(int i = 0; i < COUNT; i++){
+            if(element[i].is_leader){
+                draw_leader_x.append(element[i].positionX);
+                draw_leader_y.append(element[i].positionY);
+                if(DEBUGE == true){
+                   draw_leader_xx.append(element[i].x[0]);
+                   draw_leader_xy.append(element[i].x[1]);
+                }
             }
-        }
-        else{
-            draw_follower_x.append(element[i].positionX);
-            draw_follower_y.append(element[i].positionY);
-            if(DEBUGE == true){
-               draw_follower_xx.append(element[i].x[0]);
-               draw_follower_xy.append(element[i].x[1]);
+            else{
+                draw_follower_x.append(element[i].positionX);
+                draw_follower_y.append(element[i].positionY);
+                if(DEBUGE == true){
+                   draw_follower_xx.append(element[i].x[0]);
+                   draw_follower_xy.append(element[i].x[1]);
+                }
             }
-        }
-        if(DEBUGE == false){
-            if(element_b[i].is_leader){
-                draw_leader_xx.append(element_b[i].positionX);
-                draw_leader_xy.append(element_b[i].positionY);
-            }else{
-                draw_follower_xx.append(element_b[i].positionX);
-                draw_follower_xy.append(element_b[i].positionY);
+            if(DEBUGE == false){
+                if(element_b[i].is_leader){
+                    draw_leader_xx.append(element_b[i].positionX);
+                    draw_leader_xy.append(element_b[i].positionY);
+                }else{
+                    draw_follower_xx.append(element_b[i].positionX);
+                    draw_follower_xy.append(element_b[i].positionY);
+                }
             }
+
         }
+        ui->customPlot->addGraph();
+        ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
+        ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
+        ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        ui->customPlot->graph(0)->setData(draw_leader_x, draw_leader_y);
+        ui->customPlot->addGraph();
+        ui->customPlot->graph(1)->setPen(QPen(Qt::red));
+        ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
+        ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        ui->customPlot->graph(1)->setData(draw_follower_x, draw_follower_y);
+
+        ui->customPlot_x->addGraph();
+        ui->customPlot_x->graph(0)->setPen(QPen(Qt::red));
+        ui->customPlot_x->graph(0)->setLineStyle(QCPGraph::lsNone);
+        ui->customPlot_x->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        ui->customPlot_x->graph(0)->setData(draw_follower_xx, draw_follower_xy);
+
+        ui->customPlot_x->addGraph();
+        ui->customPlot_x->graph(1)->setPen(QPen(Qt::blue));
+        ui->customPlot_x->graph(1)->setLineStyle(QCPGraph::lsNone);
+        ui->customPlot_x->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        ui->customPlot_x->graph(1)->setData(draw_leader_xx, draw_leader_xy);
+
+        ui->customPlot_x->xAxis->setLabel("x");
+        ui->customPlot_x->yAxis->setLabel("y");
+        ui->customPlot_x->xAxis->setRange(-10, 60);
+        ui->customPlot_x->yAxis->setRange(-10, 60);
+        ui->customPlot_x->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+        ui->customPlot->xAxis->setLabel("x");
+        ui->customPlot->yAxis->setLabel("y");
+        ui->customPlot->xAxis->setRange(-10, 60);
+        ui->customPlot->yAxis->setRange(-10, 60);
+        ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+
+        ui->customPlot->xAxis->setScaleRatio(ui->customPlot->yAxis, 1);
+        ui->customPlot_x->xAxis->setScaleRatio(ui->customPlot_x->yAxis, 1);
+        ui->customPlot->replot();
+        ui->customPlot_x->replot();
+    }else{
 
     }
-    ui->customPlot->addGraph();
-    ui->customPlot->graph(0)->setPen(QPen(Qt::blue));
-    ui->customPlot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
-    ui->customPlot->graph(0)->setData(draw_leader_x, draw_leader_y);
-    ui->customPlot->addGraph();
-    ui->customPlot->graph(1)->setPen(QPen(Qt::red));
-    ui->customPlot->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
-    ui->customPlot->graph(1)->setData(draw_follower_x, draw_follower_y);
 
-    ui->customPlot_x->addGraph();
-    ui->customPlot_x->graph(0)->setPen(QPen(Qt::red));
-    ui->customPlot_x->graph(0)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot_x->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
-    ui->customPlot_x->graph(0)->setData(draw_follower_xx, draw_follower_xy);
-
-    ui->customPlot_x->addGraph();
-    ui->customPlot_x->graph(1)->setPen(QPen(Qt::blue));
-    ui->customPlot_x->graph(1)->setLineStyle(QCPGraph::lsNone);
-    ui->customPlot_x->graph(1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
-    ui->customPlot_x->graph(1)->setData(draw_leader_xx, draw_leader_xy);
-
-    ui->customPlot_x->xAxis->setLabel("x");
-    ui->customPlot_x->yAxis->setLabel("y");
-    ui->customPlot_x->xAxis->setRange(-10, 60);
-    ui->customPlot_x->yAxis->setRange(-10, 60);
-    ui->customPlot_x->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-    ui->customPlot->xAxis->setLabel("x");
-    ui->customPlot->yAxis->setLabel("y");
-    ui->customPlot->xAxis->setRange(-10, 60);
-    ui->customPlot->yAxis->setRange(-10, 60);
-    ui->customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
-
-    ui->customPlot->xAxis->setScaleRatio(ui->customPlot->yAxis, 1);
-    ui->customPlot_x->xAxis->setScaleRatio(ui->customPlot_x->yAxis, 1);
-    ui->customPlot->replot();
-    ui->customPlot_x->replot();
     connect(&dataTimer, &QTimer::timeout, this, &MainWindow::flocking);
 //    connect(&dataTimer, &QTimer::timeout, this, &MainWindow::test);
 //    connect(&dataTimer, &QTimer::timeout, [&](std::vector<particle>& element){
@@ -155,7 +169,22 @@ void MainWindow::flocking(){
         cout << human.AxisLS().first << "::"<< human.AxisLS().second << endl;
     }
 
+    double err_sum = 0;  // calculate error
+    double threshold = 0.0001;
+    double standard_x, standard_y = 0; // consus result//leader
     while(i < COUNT){
+            if(element[i].is_leader == true){
+                standard_x = standard_x + element[i].positionX;
+                standard_y = standard_y + element[i].positionY;
+            }
+
+        standard_x = standard_x / COUNT_LEADER;
+        standard_y = standard_y / COUNT_LEADER;
+        i++;
+    }
+    i = 0;
+    while(i < COUNT){
+
         element[i].compute_phi();
         element[i].find_neighbour(element);
 //        element[i].estimation_a();
@@ -170,47 +199,75 @@ void MainWindow::flocking(){
         element_b[i].human_control_run(arx, ary);
 //        element_b[i].human_control_run_pure(arx, ary);
 
-        if(element[i].is_leader){
-            draw_leader_x.append(element[i].positionX);
-            draw_leader_y.append(element[i].positionY);
-            if(DEBUGE ==true){
-                draw_leader_xx.append(element[i].x[0]);
-                draw_leader_xy.append(element[i].x[1]);
-            }
+        if(CONSENSUS == true){
+            //try to write file
 
-        }
-        else{
-            draw_follower_x.append(element[i].positionX);
-            draw_follower_y.append(element[i].positionY);
-            if(DEBUGE ==true){
-                draw_follower_xx.append(element[i].x[0]);
-                draw_follower_xy.append(element[i].x[1]);
-            }
+            err_sum = err_sum + sqrt(  pow((standard_x - element[i].x[0]), 2.0) + pow((standard_y - element[i].x[1]), 2.0) );
 
-        }
-        if(DEBUGE == false){
-            if(element_b[i].is_leader){
-                draw_leader_xx.append(element_b[i].positionX);
-                draw_leader_xy.append(element_b[i].positionY);
-            }else{
-                draw_follower_xx.append(element_b[i].positionX);
-                draw_follower_xy.append(element_b[i].positionY);
+
+        }else{
+            if(element[i].is_leader){
+                draw_leader_x.append(element[i].positionX);
+                draw_leader_y.append(element[i].positionY);
+                if(DEBUGE ==true){
+                    draw_leader_xx.append(element[i].x[0]);
+                    draw_leader_xy.append(element[i].x[1]);
+                }
+
+            }
+            else{
+                draw_follower_x.append(element[i].positionX);
+                draw_follower_y.append(element[i].positionY);
+                if(DEBUGE ==true){
+                    draw_follower_xx.append(element[i].x[0]);
+                    draw_follower_xy.append(element[i].x[1]);
+                }
+
+            }
+            if(DEBUGE == false){
+                if(element_b[i].is_leader){
+                    draw_leader_xx.append(element_b[i].positionX);
+                    draw_leader_xy.append(element_b[i].positionY);
+                }else{
+                    draw_follower_xx.append(element_b[i].positionX);
+                    draw_follower_xy.append(element_b[i].positionY);
+                }
             }
         }
 
-//        qDebug() << i<<":X:" << element[i].positionX << endl;
-//        qDebug() << i<<":Y:" << element[i].positionY << endl;
+
         i++;
     }
-    ui->customPlot->graph(0)->setData(draw_leader_x, draw_leader_y);
-    ui->customPlot->graph(1)->setData(draw_follower_x, draw_follower_y);
-    ui->customPlot_x->graph(0)->setData(draw_follower_xx, draw_follower_xy);
-    ui->customPlot_x->graph(1)->setData(draw_leader_xx, draw_leader_xy);
-    ui->customPlot->xAxis->setScaleRatio(ui->customPlot->yAxis, 1);
-    ui->customPlot_x->xAxis->setScaleRatio(ui->customPlot_x->yAxis, 1);
-    ui->customPlot->replot();
-    ui->customPlot_x->replot();
+    if(CONSENSUS == false){
+        //draw customPlot
+        ui->customPlot->graph(0)->setData(draw_leader_x, draw_leader_y);
+        ui->customPlot->graph(1)->setData(draw_follower_x, draw_follower_y);
+        ui->customPlot_x->graph(0)->setData(draw_follower_xx, draw_follower_xy);
+        ui->customPlot_x->graph(1)->setData(draw_leader_xx, draw_leader_xy);
+        ui->customPlot->xAxis->setScaleRatio(ui->customPlot->yAxis, 1);
+        ui->customPlot_x->xAxis->setScaleRatio(ui->customPlot_x->yAxis, 1);
+        ui->customPlot->replot();
+        ui->customPlot_x->replot();
+    }else{
+        //write files to consensus  and calculate how long it costs the program to consensus
 
+        count_calculate_time ++;
+        if(err_sum > threshold){//40s
+            ofstream outfile;
+            outfile.open("../result.txt", ios::app);
+            outfile << "time:" << count_calculate_time * 200 << "err_sum:" << err_sum << endl;
+        }else{
+            if(write_flag == 0){
+                ofstream outfile;
+                outfile.open("../result.txt", ios::app);
+                outfile << "consensus" << endl;
+            }else{
+                cout << "stop write file" << endl;
+            }
+            write_flag = 1;
+        }
+
+    }
 }
 
 void MainWindow::test(){

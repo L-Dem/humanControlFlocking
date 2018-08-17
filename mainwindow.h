@@ -32,6 +32,8 @@ private:
     QTimer dataTimer;
     vector<particle> element;
     vector<particle> element_b;
+    int count_calculate_time;
+    int write_flag;
     int test_count;
 };
 

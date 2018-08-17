@@ -43,7 +43,7 @@ public:
     /*control parameters*/
     int r_obs = 7;
     double c1 = 0.5;
-    double c2 = 0.5;
+    double c2 = 0.5;  // 0.5
     double epsilon = 0.5;
     double h = 0.2;
     double B = 5;

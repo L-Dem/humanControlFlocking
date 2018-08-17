@@ -176,42 +176,6 @@ void particle::estimation_b(){
 //    cout << "estimation_y:" << x[1] << endl;
 }
 
-/*compute each agent's Jacobi matrix*/
-void particle::compute_phi(){
-    int count = 0;
-//    int len_phi, len_phi_d;
-//    SIZEOF(phi, len_phi);
-//    SIZEOF(phi_d[0], len_phi_d);
-//    for(int i = 0; i < len_phi; i++){
-//        phi[i] = 0;
-//    }
-//    for(int i = 0; i < 2; i++){
-//        for(int j = 0; j < len_phi_d; j++){
-//            phi_d[i][j] = 0;
-//        }
-//    }
-    while(true){
-        for(int k = 1; k < 10; k++){
-            int j = 0;
-            while(j<=k){
-                phi[count] = pow(positionX, (k-j)) * pow(positionY, j);
-                phi_d[0][count] = (k - j) * pow(positionX, (k -j -1)) * pow(positionY, j);
-                double fine1 = pow(positionY, (j - 1));
-                double fine2 = pow(positionX, (k - j));
-                double fine3 = j * fine1 * fine2;
-                phi_d[1][count] = fine3;
-                count ++;
-                j ++;
-                if(count == count_phi)
-                    break;
-            }
-            if(count == count_phi)
-                break;
-        }
-        if(count == count_phi)
-            break;
-    }
-}
 
 /*find agents' neighbor*/
 void particle::find_neighbour(vector<particle> particle_list){  //rewrite
@@ -537,3 +501,41 @@ double particle::sigma1(double z){
     double y = z / sqrt(1 + pow(z, 2));
     return y;
 }
+
+/*compute each agent's Jacobi matrix*/
+void particle::compute_phi(){
+    int count = 0;
+//    int len_phi, len_phi_d;
+//    SIZEOF(phi, len_phi);
+//    SIZEOF(phi_d[0], len_phi_d);
+//    for(int i = 0; i < len_phi; i++){
+//        phi[i] = 0;
+//    }
+//    for(int i = 0; i < 2; i++){
+//        for(int j = 0; j < len_phi_d; j++){
+//            phi_d[i][j] = 0;
+//        }
+//    }
+    while(true){
+        for(int k = 1; k < 10; k++){
+            int j = 0;
+            while(j<=k){
+                phi[count] = pow(positionX, (k-j)) * pow(positionY, j);
+                phi_d[0][count] = (k - j) * pow(positionX, (k -j -1)) * pow(positionY, j);
+                double fine1 = pow(positionY, (j - 1));
+                double fine2 = pow(positionX, (k - j));
+                double fine3 = j * fine1 * fine2;
+                phi_d[1][count] = fine3;
+                count ++;
+                j ++;
+                if(count == count_phi)
+                    break;
+            }
+            if(count == count_phi)
+                break;
+        }
+        if(count == count_phi)
+            break;
+    }
+}
+
