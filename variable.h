@@ -4,7 +4,7 @@
 
 #define COUNT_PHI 2
 #define DEBUGE true // flag to lot estimation or comparison
-#define CONSENSUS true // try not to draw and see how long to take to consensus
+#define CONSENSUS false // try not to draw and see how long to take to consensus
 #define COUNT 16  // number of agents
 #define CALCULATE 20
 #define COUNT_LEADER COUNT/CALCULATE + 1  // COUNT / CALCULATE

@@ -26,7 +26,7 @@ public:
     double velocity[2] = {0, 0};
     double velocityX = velocity[0];
     double velocityY = velocity[1];
-    int r_com = 15;  // communicate radius
+    int r_com = 10;  // communicate radius 15
 //    static vector<double> omega;
     double *omega = new double[count_phi]();
     double *omega_d = new double[count_phi]();
@@ -53,6 +53,8 @@ public:
 //    ~particle();
     void estimation_a();
     void estimation_b();
+    void estimation_b(double arx, double ary);
+    void estimation_c();
 //    estimation_b();
     void compute_phi();
     void find_neighbour(vector<particle> particle_list);

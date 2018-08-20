@@ -35,6 +35,7 @@ private:
     int count_calculate_time;
     int write_flag;
     int test_count;
+    int control;
 };
 
 #endif // MAINWINDOW_H

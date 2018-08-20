@@ -97,7 +97,7 @@ void particle::estimation_a(){
     int len = count_phi;
 
 
-    if(MY_ESTIMATION){
+    if(MY_ESTIMATION){  // consensus to leader
         if(is_leader){
             for(int k = 0; k < len; k++){
                 x[k] = phi[k];
@@ -116,7 +116,7 @@ void particle::estimation_a(){
                 x[k] = omega[k] + phi[k];
             }
         }
-    }else{
+    }else{ // consensus to the flocking center
         for(unsigned int j = 0; j < neighbor.size(); j++){
             double a = 1;
             for(int k = 0; k < len; k++){
@@ -133,6 +133,8 @@ void particle::estimation_a(){
         x_d[k] = x[k] - x_before[k];
     }
 }
+
+
 
 void particle::estimation_b(){
     r = 0.1;
@@ -176,6 +178,96 @@ void particle::estimation_b(){
 //    cout << "estimation_y:" << x[1] << endl;
 }
 
+void particle::estimation_b(double arx, double ary){
+    r = 0.1;
+    int len_x = count_phi;
+    for(int k= 0; k < len_x; k++){
+        x_before[k] = x[k];
+        omega_before[k] = omega[k];
+    }
+
+    vector<double> middle1(count_phi);
+    vector<double> middle2(count_phi);
+    vector<double> middle3(count_phi);
+    int len = count_phi;
+    if(arx == 0 && ary == 0){
+        for(unsigned int j = 0; j < neighbor.size(); j++){
+            double a = 1.0;
+            double b = 0.4;
+            for(int k = 0; k < len; k++){
+                middle1[k] = middle1[k] + a * (x[k] - neighbor[j].x[k]);
+            }
+            for(int k = 0; k < len; k++){
+                middle2[k] = middle2[k] + b * (omega[k] - neighbor[j].omega[k]);
+            }
+            for(int k = 0; k < len; k++){
+                middle3[k] = middle3[k] + b * (x[k] - neighbor[j].x[k]);
+            }
+        }
+        for(int k = 0; k < len; k++){
+            omega_d[k] = -middle3[k];
+            omega[k] = omega_before[k] + omega_d[k] * dt;
+            x_d[k] = -r * x[k] - middle1[k] + middle2[k] + r * phi[k];
+            x[k] = x[k] + x_d[k] * dt;
+        }
+    }else{
+        if(is_leader){
+            for(int k = 0; k < len; k++){
+                x[k] = phi[k];
+            }
+
+        }else{
+            for(unsigned int j = 0; j < neighbor.size(); j++){
+                double a = 1.0;
+                double b = 0.4;
+                for(int k = 0; k < len; k++){
+                    middle1[k] = middle1[k] + a * (x[k] - neighbor[j].x[k]);
+                }
+                for(int k = 0; k < len; k++){
+                    middle2[k] = middle2[k] + b * (omega[k] - neighbor[j].omega[k]);
+                }
+                for(int k = 0; k < len; k++){
+                    middle3[k] = middle3[k] + b * (x[k] - neighbor[j].x[k]);
+                }
+            }
+            for(int k = 0; k < len; k++){
+                omega_d[k] = -middle3[k];
+                omega[k] = omega_before[k] + omega_d[k] * dt;
+                x_d[k] = -r * x[k] - middle1[k] + middle2[k] + r * phi[k];
+                x[k] = x[k] + x_d[k] * dt;
+            }
+        }
+    }
+
+//    cout << "estimation_x:" << x[0] << endl;
+//    cout << "estimation_y:" << x[1] << endl;
+}
+
+
+void particle::estimation_c(){
+    r = 0.1;//0.1
+    if(is_leader){
+        r = 1;
+    }
+    int len_x = count_phi;
+    for(int k= 0; k < len_x; k++){
+        x_before[k] = x[k];
+    }
+    vector<double> middle(count_phi);
+    middle.clear();
+
+    int len = count_phi;
+    for(unsigned int j = 0; j < neighbor.size(); j++){
+        double a = 1.0;//1.12
+        for(int k = 0; k < len; k++){
+            middle[k] = middle[k] + a * (x[k] - neighbor[j].x[k]);
+        }
+    }
+    for(int k = 0; k < len; k++){
+        x_d[k] = r * (phi[k] - x[k]) - middle[k];
+        x[k] = x[k] + x_d[k] * dt;
+    }
+}
 
 /*find agents' neighbor*/
 void particle::find_neighbour(vector<particle> particle_list){  //rewrite

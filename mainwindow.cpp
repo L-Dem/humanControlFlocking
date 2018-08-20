@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     count_calculate_time = 0;
     write_flag = 0;
     if(CONSENSUS == false){// draw plot
+        control = 200;
         for(int i = 0; i < COUNT; i++){
             if(element[i].is_leader){
                 draw_leader_x.append(element[i].positionX);
@@ -124,14 +125,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->customPlot->replot();
         ui->customPlot_x->replot();
     }else{
-
+        control = 20;
     }
 
     connect(&dataTimer, &QTimer::timeout, this, &MainWindow::flocking);
 //    connect(&dataTimer, &QTimer::timeout, this, &MainWindow::test);
 //    connect(&dataTimer, &QTimer::timeout, [&](std::vector<particle>& element){
 //    });
-    dataTimer.start(200);
+    dataTimer.start(control); //200
 }
 
 MainWindow::~MainWindow()
@@ -170,25 +171,26 @@ void MainWindow::flocking(){
     }
 
     double err_sum = 0;  // calculate error
-    double threshold = 0.0001;
+    double threshold = 0.005;
     double standard_x, standard_y = 0; // consus result//leader
     while(i < COUNT){
             if(element[i].is_leader == true){
-                standard_x = standard_x + element[i].positionX;
-                standard_y = standard_y + element[i].positionY;
+                standard_x = element[i].positionX;
+                standard_y = element[i].positionY;
             }
-
-        standard_x = standard_x / COUNT_LEADER;
-        standard_y = standard_y / COUNT_LEADER;
         i++;
     }
+//    int count_leader = COUNT_LEADER;
+//    standard_x = standard_x / count_leader;
+//    standard_y = standard_y / count_leader;
     i = 0;
     while(i < COUNT){
 
         element[i].compute_phi();
         element[i].find_neighbour(element);
 //        element[i].estimation_a();
-        element[i].estimation_b();
+//        element[i].estimation_b(arx, ary);
+        element[i].estimation_c();
         element[i].human_control_run(arx, ary);
 //        element[i].human_control_run_pure(arx, ary);
 
@@ -255,12 +257,15 @@ void MainWindow::flocking(){
         if(err_sum > threshold){//40s
             ofstream outfile;
             outfile.open("../result.txt", ios::app);
-            outfile << "time:" << count_calculate_time * 200 << "err_sum:" << err_sum << endl;
+            outfile << "time:" << count_calculate_time << "err_sum:" << err_sum << endl;
+            outfile.close();
         }else{
+            ofstream outfile;
+            outfile.open("../result.txt", ios::app);
+            outfile << "consensus---" << err_sum << endl;
+            outfile.close();
             if(write_flag == 0){
-                ofstream outfile;
-                outfile.open("../result.txt", ios::app);
-                outfile << "consensus" << endl;
+                cout << "" << endl;
             }else{
                 cout << "stop write file" << endl;
             }
