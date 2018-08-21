@@ -190,8 +190,10 @@ void MainWindow::flocking(){
         element[i].find_neighbour(element);
 //        element[i].estimation_a();
 //        element[i].estimation_b(arx, ary);
-        element[i].estimation_c();
-        element[i].human_control_run(arx, ary);
+//        element[i].estimation_c();
+        element[i].estimation_v(arx, ary);
+        element[i].flocking_velocity();
+//        element[i].human_control_run(arx, ary);
 //        element[i].human_control_run_pure(arx, ary);
 
         element_b[i].compute_phi();

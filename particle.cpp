@@ -250,7 +250,7 @@ void particle::estimation_c(){
         r = 1;
     }
     int len_x = count_phi;
-    for(int k= 0; k < len_x; k++){
+    for(int k = 0; k < len_x; k++){
         x_before[k] = x[k];
     }
     vector<double> middle(count_phi);
@@ -267,6 +267,37 @@ void particle::estimation_c(){
         x_d[k] = r * (phi[k] - x[k]) - middle[k];
         x[k] = x[k] + x_d[k] * dt;
     }
+}
+
+void particle::estimation_v(double arx, double ary){
+    r = 0.1;
+    if(is_leader){
+        r = 1;
+    }
+    int len_x = count_phi;
+    for(int k = 0; k < len_x; k++){
+        x_before[k] = x[k];
+    }
+    vector<double> middle(count_phi);
+    middle.clear();
+
+    int len = count_phi;
+    for(unsigned int j = 0; j < neighbor.size(); j++){
+        double a = 1.0;
+        for(int k = 0; k < len; k++){
+            middle[k] = middle[k] + a * (x[k] - neighbor[j].x[k]);
+        }
+    }
+    for(int k = 0; k < len; k++){
+        x_d[k] = r * (velocity[k] - x[k]) - middle[k];
+        x[k] = x[k] + x_d[k] * dt;
+    }
+
+    if(is_leader){  // human input to leader
+        x[0] = x[0] + arx * SCALA * dt;
+        x[1] = x[1] + ary * SCALA * dt;
+    }
+
 }
 
 /*find agents' neighbor*/
@@ -286,13 +317,23 @@ void particle::find_neighbour(vector<particle> particle_list){  //rewrite
     }
 }
 
+
+
 /*control*/
-void particle::control_run(){  // use FLAG to decide which kind of flocking to run
+void particle::flocking_velocity(){
     int len = count_phi;
-    if(is_leader == false){
+    double damp = 0.0;
+    if(is_leader){
+        damp = 0.0;
+    }
         int count_nei = neighbor.size();
         double n[count_nei][COUNT_PHI] = {0};
         double u1[len], u2[len], u3[len] = {0};
+        for(int i = 0; i < len; i ++){
+            u1[i] = 0;
+            u2[i] = 0;
+            u3[i] = 0;
+        }
         double distance, distance2;
         for(int i = 0;i < count_nei; i++){
             distance2 = pow(neighbor[i].phi[0] - phi[0], order) + pow(neighbor[i].phi[1] - phi[1], order);
@@ -304,46 +345,33 @@ void particle::control_run(){  // use FLAG to decide which kind of flocking to r
             }
         }
         for(int k = 0; k < len; k ++){
-            u3[k] = -c1 * (position[k] - x[k]) - c2 * (velocity[k] - x_d[k]);
+            u3[k] = -c1 * (velocity[k] - x[k]) ;
         }
-        for(int k = 0; k < len; k++){
-            if(PURE_FLOCKING == false){
-                acceleration[k] = u1[k] + u2[k] + u3[k];
-            }else {
-                acceleration[k] = u1[k] + u2[k];
-            }
-        }
-    }else{
-        double acceleration_x, acceleration_y = 0;
-        double middle[2][COUNT_PHI] = {0};
-        double last[2] = {0};
-        for(int i = 0; i < 2; i ++){  //2_n * n_n = 2_n
-            for(int j = 0;j < count_phi; j++){
-                for(int k = 0; k < count_phi; k++){
-                    middle[i][j] = middle[i][j] + phi_d[i][k]*gamma[k][j];
-                }
-            }
-        }
-        for(int i = 0; i < 2; i ++){  // 2_n * n_1 = 2*1
-            for(int j = 0;j < count_phi; j++){
-                    last[i] = last[i] + middle[i][j] * (desiredMoment[leader_id][j] - x[j]);
-            }
-        }
-        acceleration_x = -B * velocityX + last[0];
-        acceleration_y = -B * velocityY + last[1];
-        acceleration[0] = acceleration_x;
-        acceleration[1] = acceleration_y;
-    }
-    velocityX = velocityX + acceleration[0] * dt;
-    velocityY = velocityY + acceleration[1] * dt;
-    velocity[0] = velocityX;
-    velocity[1] = velocityY;
-    position[0] = position[0] + velocity[0] * dt;
-    position[1] = position[1] + velocity[1] * dt;
-    positionX = position[0];
-    positionY = position[1];
-}
 
+        for(int k = 0; k < len; k++){
+            acceleration[k] = u1[k] + u2[k] + u3[k] - damp * velocity[k];
+        }
+
+        velocityX = velocityX + acceleration[0] * dt;
+        velocityY = velocityY + acceleration[1] * dt;
+        velocity[0] = velocityX;
+        velocity[1] = velocityY;
+        cout << "test:leader:velocityx::" << velocity[0] << endl;
+        position[0] = position[0] + velocity[0] * dt;
+        position[1] = position[1] + velocity[1] * dt;
+        cout << "test:leader:positionx::" << position[0] << endl;
+        positionX = position[0];
+        positionY = position[1];
+
+        //        velocityX = arx * 10;
+        //        velocityY = ary * 10;
+        //        velocity[0] = velocityX;
+        //        velocity[1] = velocityY;
+        //        position[0] = position[0] + velocity[0] * dt;
+        //        position[1] = position[1] + velocity[1] * dt;
+        //        positionX = position[0];
+        //        positionY = position[1];
+}
 
 
 
@@ -629,5 +657,62 @@ void particle::compute_phi(){
         if(count == count_phi)
             break;
     }
+}
+
+void particle::control_run(){  // use FLAG to decide which kind of flocking to run
+    int len = count_phi;
+    if(is_leader == false){
+        int count_nei = neighbor.size();
+        double n[count_nei][COUNT_PHI] = {0};
+        double u1[len], u2[len], u3[len] = {0};
+        double distance, distance2;
+        for(int i = 0;i < count_nei; i++){
+            distance2 = pow(neighbor[i].phi[0] - phi[0], order) + pow(neighbor[i].phi[1] - phi[1], order);
+            distance = sqrt(distance2);
+            for(int k = 0; k < len; k++){
+                n[i][k] = (neighbor[i].phi[k] - phi[k]) / sqrt(1 + epsilon * distance2);
+                u1[k] = phi_alpha(distance) * n[i][k] + u1[k];
+                u2[k] = 0.3 * (neighbor[i].velocity[k] - velocity[k]) + u2[k];
+            }
+        }
+        for(int k = 0; k < len; k ++){
+            u3[k] = -c1 * (position[k] - x[k]) - c2 * (velocity[k] - x_d[k]);
+        }
+        for(int k = 0; k < len; k++){
+            if(PURE_FLOCKING == false){
+                acceleration[k] = u1[k] + u2[k] + u3[k];
+            }else {
+                acceleration[k] = u1[k] + u2[k];
+            }
+        }
+    }else{
+        double acceleration_x, acceleration_y = 0;
+        double middle[2][COUNT_PHI] = {0};
+        double last[2] = {0};
+        for(int i = 0; i < 2; i ++){  //2_n * n_n = 2_n
+            for(int j = 0;j < count_phi; j++){
+                for(int k = 0; k < count_phi; k++){
+                    middle[i][j] = middle[i][j] + phi_d[i][k]*gamma[k][j];
+                }
+            }
+        }
+        for(int i = 0; i < 2; i ++){  // 2_n * n_1 = 2*1
+            for(int j = 0;j < count_phi; j++){
+                    last[i] = last[i] + middle[i][j] * (desiredMoment[leader_id][j] - x[j]);
+            }
+        }
+        acceleration_x = -B * velocityX + last[0];
+        acceleration_y = -B * velocityY + last[1];
+        acceleration[0] = acceleration_x;
+        acceleration[1] = acceleration_y;
+    }
+    velocityX = velocityX + acceleration[0] * dt;
+    velocityY = velocityY + acceleration[1] * dt;
+    velocity[0] = velocityX;
+    velocity[1] = velocityY;
+    position[0] = position[0] + velocity[0] * dt;
+    position[1] = position[1] + velocity[1] * dt;
+    positionX = position[0];
+    positionY = position[1];
 }
 

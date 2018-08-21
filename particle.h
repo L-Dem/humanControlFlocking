@@ -53,14 +53,16 @@ public:
 //    ~particle();
     void estimation_a();
     void estimation_b();
-    void estimation_b(double arx, double ary);
+    void estimation_b(double arx, double ary);  // when there is no human input, estimate the flocking center
     void estimation_c();
+    void estimation_v(double arx, double ary); // estimate the velocity of the system .human input is in this level
 //    estimation_b();
     void compute_phi();
     void find_neighbour(vector<particle> particle_list);
     void control_run();
     void human_control_run_pure(double arx, double ary);
     void human_control_run(double arx, double ary);
+    void flocking_velocity();
     double phi_alpha(double z);
     double phi_h(double z);
     double sigma1(double z);
