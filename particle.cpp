@@ -340,8 +340,8 @@ void particle::flocking_velocity(){
             distance = sqrt(distance2);
             for(int k = 0; k < len; k++){
                 n[i][k] = (neighbor[i].phi[k] - phi[k]) / sqrt(1 + epsilon * distance2);
-                u1[k] = phi_alpha(distance) * n[i][k] + u1[k];
-                u2[k] = 0.3 * (neighbor[i].velocity[k] - velocity[k]) + u2[k];
+                u1[k] = u1[k] + phi_alpha(distance) * n[i][k];
+                u2[k] = u2[k] + 0.3 * (neighbor[i].velocity[k] - velocity[k]);
             }
         }
         for(int k = 0; k < len; k ++){
@@ -395,8 +395,8 @@ void particle::human_control_run(double arx, double ary){  // flocking which has
             distance = sqrt(distance2);
             for(int k = 0; k < len; k++){
                 n[i][k] = (neighbor[i].phi[k] - phi[k]) / sqrt(1 + epsilon * distance2);
-                u1[k] = phi_alpha(distance) * n[i][k] + u1[k];
-                u2[k] = 0.3 * (neighbor[i].velocity[k] - velocity[k]) + u2[k];
+                u1[k] = u1[k] + phi_alpha(distance) * n[i][k];
+                u2[k] = u2[k] + 0.3 * (neighbor[i].velocity[k] - velocity[k]);
             }
         }
         for(int k = 0; k < len; k ++){
@@ -445,8 +445,8 @@ void particle::human_control_run(double arx, double ary){  // flocking which has
             distance = sqrt(distance2);
             for(int k = 0; k < len; k++){
                 n[i][k] = (neighbor[i].phi[k] - phi[k]) / sqrt(1 + epsilon * distance2);
-                u1[k] = phi_alpha(distance) * n[i][k] + u1[k];
-                u2[k] = 0.3 * (neighbor[i].velocity[k] - velocity[k]) + u2[k];
+                u1[k] = u1[k] + phi_alpha(distance) * n[i][k];
+                u2[k] = u2[k] + 0.3 * (neighbor[i].velocity[k] - velocity[k]);
             }
         }
         for(int k = 0; k < len; k ++){
@@ -507,7 +507,7 @@ void particle::human_control_run_pure(double arx, double ary){  // pure flocking
                 if(isnan(u1[k])){
                     cout << "bug appeared!" << endl;
                 }
-                u2[k] = 0.3 * (neighbor[i].velocity[k] - velocity[k]) + u2[k];
+                u2[k] = u2[k] + 0.3 * (neighbor[i].velocity[k] - velocity[k]);
             }
         }
         for(int k = 0; k < len; k ++){
@@ -559,8 +559,8 @@ void particle::human_control_run_pure(double arx, double ary){  // pure flocking
             distance = sqrt(distance2);
             for(int k = 0; k < len; k++){
                 n[i][k] = (neighbor[i].phi[k] - phi[k]) / sqrt(1 + epsilon * distance2);
-                u1[k] = phi_alpha(distance) * n[i][k] + u1[k];
-                u2[k] = 0.3 * (neighbor[i].velocity[k] - velocity[k]) + u2[k];
+                u1[k] = u1[k] + phi_alpha(distance) * n[i][k];
+                u2[k] = u2[k] + 0.3 * (neighbor[i].velocity[k] - velocity[k]);
             }
         }
         for(int k = 0; k < len; k ++){

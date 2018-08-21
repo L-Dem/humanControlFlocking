@@ -189,6 +189,7 @@ void MainWindow::flocking(){
         element[i].compute_phi();
         element[i].find_neighbour(element);
 //        element[i].estimation_a();
+//        element[i].estimation_b();
 //        element[i].estimation_b(arx, ary);
 //        element[i].estimation_c();
         element[i].estimation_v(arx, ary);
@@ -200,8 +201,8 @@ void MainWindow::flocking(){
         element_b[i].find_neighbour(element_b);
 //        element_b[i].estimation_a();
         element_b[i].estimation_b();
-        element_b[i].human_control_run(arx, ary);
-//        element_b[i].human_control_run_pure(arx, ary);
+//        element_b[i].human_control_run(arx, ary);
+        element_b[i].human_control_run_pure(arx, ary);
 
         if(CONSENSUS == true){
             //try to write file
