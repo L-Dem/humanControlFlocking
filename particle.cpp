@@ -294,9 +294,13 @@ void particle::estimation_v(double arx, double ary){
     }
 
     if(is_leader){  // human input to leader
-        x[0] = x[0] + arx * SCALA * dt;
-        x[1] = x[1] + ary * SCALA * dt;
+        x[0] = x[0] + (arx * 20 - x[0]) * SCALA * dt;
+        x[1] = x[1] + (ary * 20 - x[1]) * SCALA * dt;
     }
+    x_d[0] = -0.1 * x[0];
+    x_d[1] = -0.1 * x[1];
+    x[0] = x[0] + x_d[0] * dt;
+    x[1] = x[1] + x_d[1] * dt;
 
 }
 
@@ -349,7 +353,8 @@ void particle::flocking_velocity(){
         }
 
         for(int k = 0; k < len; k++){
-            acceleration[k] = u1[k] + u2[k] + u3[k] - damp * velocity[k];
+//            acceleration[k] = u1[k] + u2[k] + u3[k] - damp * velocity[k];
+            acceleration[k] = u1[k] + u2[k] + u3[k];
         }
 
         velocityX = velocityX + acceleration[0] * dt;
