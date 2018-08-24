@@ -296,7 +296,10 @@ void particle::estimation_v(double arx, double ary){
     if(is_leader){  // human input to leader
         x[0] = x[0] + (arx * 20 - x[0]) * SCALA * dt;
         x[1] = x[1] + (ary * 20 - x[1]) * SCALA * dt;
+//        x[0] = x[0] + arx * SCALA * dt;
+//        x[1] = x[1] + ary * SCALA * dt;
     }
+    // add damp to every agent
     x_d[0] = -0.1 * x[0];
     x_d[1] = -0.1 * x[1];
     x[0] = x[0] + x_d[0] * dt;
@@ -353,8 +356,8 @@ void particle::flocking_velocity(){
         }
 
         for(int k = 0; k < len; k++){
-//            acceleration[k] = u1[k] + u2[k] + u3[k] - damp * velocity[k];
-            acceleration[k] = u1[k] + u2[k] + u3[k];
+            acceleration[k] = u1[k] + u2[k] + u3[k] - damp * velocity[k];
+//            acceleration[k] = u1[k] + u2[k] + u3[k];
         }
 
         velocityX = velocityX + acceleration[0] * dt;
@@ -527,8 +530,8 @@ void particle::human_control_run_pure(double arx, double ary){  // pure flocking
                 acceleration[k] = u1[k] + u2[k];
 //            }
         }
-        velocityX = velocityX + acceleration[0] * dt + arx * SCALA * dt;
-        velocityY = velocityY + acceleration[1] * dt + ary * SCALA * dt;
+        velocityX = velocityX + acceleration[0] * dt + arx * 5 * SCALA * dt;
+        velocityY = velocityY + acceleration[1] * dt + ary * 5 * SCALA * dt;
         velocity[0] = velocityX;
         velocity[1] = velocityY;
         cout << "pure-test:leader:velocityx::" << velocity[0] << endl;
